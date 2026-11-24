@@ -1,0 +1,12 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import ListaPublicaciones from '../../components/ListaPublicaciones.astro';
+import Boletin from '../../components/Boletin.astro';
+---
+<Base title="Publicaciones" description="Artículos en la Revista FORUM y alertas del Poder Judicial y del TFJA, explicadas en simple." activo="publicaciones">
+  <PageHead num="04" eyebrow="PUBLICACIONES" a="Nuestras " em="publicaciones." actual="Publicaciones"
+    intro="Los artículos que publicamos en la Revista FORUM y lo nuevo de los tribunales explicado en simple: Poder Judicial de la Federación cada semana y Tribunal Federal de Justicia Administrativa cada mes." />
+  <ListaPublicaciones />
+  <Boletin />
+</Base>

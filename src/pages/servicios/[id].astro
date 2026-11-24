@@ -1,0 +1,79 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import Icono from '../../components/Icono.astro';
+import { RUTAS } from '../../data/sitio';
+import { SERVICIOS, type Servicio } from '../../data/servicios';
+
+export const getStaticPaths = (() => SERVICIOS.map((s) => ({ params: { id: s.id }, props: { s } }))) satisfies GetStaticPaths;
+
+const { s } = Astro.props as { s: Servicio };
+const nombre = s.id === 'otros' ? 'Otros servicios fiscales' : s.name;
+const otros = SERVICIOS.filter((x) => x.id !== s.id).slice(0, 3);
+---
+<Base title={nombre} description={`${nombre}: qué es, cuándo te sirve y qué incluye. Espinoza Abogados, CDMX y Cancún.`} activo="servicios">
+  <PageHead num={s.num} eyebrow={`SERVICIO ${s.num} DE ${String(SERVICIOS.length).padStart(2, '0')}`} a={s.name} intro={s.intro} icon={s.icon}
+    migas={[{ label: 'Servicios' }]} actual={s.name} />
+
+  <section class="wrap pg">
+    <div class="grid">
+      <div class="rv box light">
+        <p class="mono gold k">¿ES PARA TI?</p>
+        <p class="serif t">Te sirve si…</p>
+        <ul class="stag">
+          {s.cuando.map((x) => <li><span aria-hidden="true" class="serif gold sec">§</span><span>{x}</span></li>)}
+        </ul>
+      </div>
+      <div class="rv box dark">
+        <p class="mono k acc">LO QUE HACEMOS</p>
+        <p class="serif t">Qué hacemos por ti.</p>
+        <ul class="stag">
+          {s.incluye.map((x) => <li><span class="tick"><Icono name="check" size={14} stroke={2.6} /></span><span>{x}</span></li>)}
+        </ul>
+      </div>
+    </div>
+
+    <div class="rv cta">
+      <div class="ctxt">
+        <p class="serif">¿Es tu caso?</p>
+        <p class="muted">Revisamos tu situación y te decimos qué hacer.</p>
+      </div>
+      <a class="lnk btn pill lg" href={RUTAS.diagnostico}>Agenda un diagnóstico preventivo<Icono name="arrow" size={17} stroke={2} class="arr" /></a>
+    </div>
+
+    <p class="rv mono more">OTROS SERVICIOS</p>
+    <div class="list-rows">
+      {otros.map((o) => (
+        <a class="lnk srow rv orow" href={RUTAS.servicio(o.id)}>
+          <span class="num">{o.num}</span>
+          <span class="serif on">{o.name}</span>
+          <span class="ring"><Icono name="arrow" size={18} stroke={2} /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .pg { padding-top: clamp(40px, 6vw, 80px); padding-bottom: clamp(56px, 8vw, 104px); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .box { padding: clamp(26px, 3vw, 40px); border-radius: 24px; }
+  .box.light { background: var(--surface); border: 1px solid var(--line); }
+  .k { margin: 0 0 6px; }
+  .acc { color: var(--dark-accent); }
+  .t { margin: 0 0 18px; font-size: 38px; line-height: 1; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { display: flex; gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); }
+  .sec { font-size: 24px; line-height: 1; }
+  .dark li { gap: 14px; align-items: flex-start; border-top-color: var(--dark-line); }
+  .tick { flex: none; margin-top: 1px; width: 26px; height: 26px; border-radius: 50%; background: var(--dark-accent); color: var(--dark); display: inline-flex; align-items: center; justify-content: center; }
+  .cta { position: relative; overflow: hidden; margin-top: 16px; padding: clamp(28px, 4vw, 48px); border-radius: 24px; border: 1px solid var(--line-strong); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 22px; }
+  .ctxt { position: relative; flex: 1 1 320px; }
+  .ctxt p { margin: 0; }
+  .ctxt .serif { font-size: clamp(32px, 3.6vw, 46px); line-height: 1; }
+  .ctxt .muted { margin-top: 8px; }
+  .more { margin: clamp(56px, 7vw, 96px) 0 18px; }
+  .orow { gap: 20px; padding: 20px 0; }
+  .on { flex: 1; font-size: clamp(26px, 2.8vw, 36px); line-height: 1.05; }
+</style>

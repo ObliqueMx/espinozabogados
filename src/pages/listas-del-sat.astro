@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import ListasBand from '../components/ListasBand.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import { PASOS_LISTAS } from '../data/firma';
+---
+<Base title="Listas del SAT 69-B y 49 Bis" description="Cuántos contribuyentes hay en las listas 69-B y 49 Bis del SAT, qué significa aparecer y qué hacer si tu proveedor está en ellas." activo="listas">
+  <PageHead num="03" eyebrow="LISTAS DEL SAT" a="Las listas del SAT, " em="al día." actual="Listas del SAT"
+    intro="Cuántos contribuyentes hay en las listas 69-B y 49 Bis, qué significa aparecer y qué hacer." />
+  <ListasBand num="04" />
+
+  <section class="wrap pg">
+    <div class="grid">
+      <div class="card corner rv box">
+        <p class="serif big">69-B</p>
+        <p class="b">Empresas que facturan operaciones simuladas (EFOS)</p>
+        <p class="muted">El SAT considera que facturaron sin tener personal, bienes o capacidad para hacer lo que facturaron. Primero publica una lista de “presuntos”, que tienen un plazo para defenderse. Si no lo logran, pasan a la lista definitiva y sus facturas dejan de tener efecto fiscal.</p>
+      </div>
+      <div class="card corner rv box">
+        <p class="serif big">49 Bis</p>
+        <p class="b">Contribuyentes con facturas falsas.</p>
+        <p class="muted">Es una revisión rápida del SAT, vigente desde 2026. Mientras dura, la empresa no puede facturar. Si el SAT concluye que sus facturas son falsas, publica su nombre y RFC en el Diario Oficial.</p>
+      </div>
+    </div>
+
+    <p class="rv mono gold k">QUÉ HACER</p>
+    <h2 class="rv">Si tú o tu proveedor aparecen, <em>actúa rápido.</em></h2>
+    <ol>
+      {PASOS_LISTAS.map((x) => (
+        <li class="rv">
+          <span class="serif gold n">{x.n}</span>
+          <p class="t">{x.t}</p>
+          <p class="muted d">{x.d}</p>
+        </li>
+      ))}
+    </ol>
+    <p class="rv muted src">Fuente: Diario Oficial de la Federación y <a class="lnk ul" href="https://www.sat.gob.mx/minisitio/DatosAbiertos/contribuyentes_publicados.html" target="_blank" rel="noopener">listados del SAT <span class="sr-only">(abre en otra pestaña)</span></a>.</p>
+  </section>
+  <CtaFinal />
+</Base>
+
+<style>
+  .pg { padding-top: clamp(56px, 8vw, 104px); padding-bottom: clamp(56px, 8vw, 104px); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .box { padding: 34px; border-radius: 24px; }
+  .box p { margin: 0; }
+  .big { font-size: 64px; line-height: 1; color: var(--gold); }
+  .b { margin-top: 16px !important; font-weight: 600; }
+  .box .muted { margin-top: 8px; }
+  .k { margin: clamp(56px, 7vw, 96px) 0 8px; }
+  h2 { margin: 0 0 28px; font-family: var(--serif); font-weight: 400; font-size: clamp(36px, 4.2vw, 56px); line-height: 1; }
+  ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); border-top: 1px solid var(--line-strong); }
+  li { padding: 28px 24px 28px 0; }
+  .n { display: block; font-size: 56px; line-height: .9; }
+  .t { margin: 14px 0 0; font-weight: 600; font-size: 19px; }
+  .d { margin: 6px 0 0; font-size: 16px; }
+  .src { margin: 28px 0 0; font-size: 15px; }
+  .src a { color: var(--ink); }
+</style>

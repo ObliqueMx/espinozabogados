@@ -1,0 +1,123 @@
+---
+// Formulario de diagnóstico preventivo. Funciona sin JS (POST normal a /enviar.php);
+// con JS se envía en segundo plano y muestra el resultado sin recargar.
+import Icono from './Icono.astro';
+import { RUTAS, SITIO, ruta, TAMANOS_EMPRESA, TEMAS_DIAGNOSTICO } from '../data/sitio';
+import { PROCESO_DIAGNOSTICO } from '../data/firma';
+
+---
+<section class="dark diag" aria-label="Formulario de diagnóstico">
+  <div class="wrap cols">
+    <div class="side">
+      <p class="rv mono muted how">ASÍ FUNCIONA</p>
+      <ol class="steps">
+        {PROCESO_DIAGNOSTICO.map((t, i) => <li class="rv"><span class="n mono">{i + 1}</span>{t}</li>)}
+      </ol>
+      <div class="rv alt">
+        <span class="muted">¿Prefieres escribirnos?</span>
+        <a class="lnk ul strong" href={SITIO.whatsapp} target="_blank" rel="noopener">WhatsApp · {SITIO.telefono} <span class="sr-only">(abre en otra pestaña)</span></a>
+        <a class="lnk ul strong" href={`mailto:${SITIO.correo}`}>{SITIO.correo}</a>
+      </div>
+    </div>
+
+    <div class="rv card-form" data-form-box data-estado="form">
+      <form action={ruta('/enviar.php')} method="post" data-ajax="diagnostico">
+        <input type="hidden" name="form" value="diagnostico">
+        <!-- Trampa para bots: los humanos no ven este campo. -->
+        <label class="hp" aria-hidden="true">Sitio web<input name="sitio_web" tabindex="-1" autocomplete="off"></label>
+        <label>Nombre<input class="fi" required name="nombre" autocomplete="name" maxlength="200"></label>
+        <label>Correo<input class="fi" required type="email" name="correo" autocomplete="email" maxlength="200"></label>
+        <label>Teléfono<input class="fi" required type="tel" name="telefono" autocomplete="tel" maxlength="40"></label>
+        <fieldset>
+          <legend>Eres</legend>
+          <div class="seg">
+            <label><input type="radio" name="tipo" value="empresa" checked>Empresa</label>
+            <label><input type="radio" name="tipo" value="persona">Persona física</label>
+          </div>
+        </fieldset>
+        <label class="tamano">Tamaño de la empresa <span class="opt muted">(opcional)</span>
+          <select class="fi" name="tamano">
+            <option value="">Selecciona</option>
+            {TAMANOS_EMPRESA.map((t) => <option>{t}</option>)}
+          </select>
+        </label>
+        <label>¿Qué te preocupa?
+          <select class="fi" required name="tema">
+            <option value="">Selecciona un tema</option>
+            {TEMAS_DIAGNOSTICO.map((t) => <option>{t}</option>)}
+          </select>
+        </label>
+        <label class="full">Mensaje<textarea class="fi" name="mensaje" rows="4" maxlength="5000" placeholder="Cuéntanos brevemente tu caso"></textarea></label>
+        <label class="full check"><input required type="checkbox" name="aviso"><span>He leído y acepto el <a class="lnk ul" href={RUTAS.aviso}>aviso de privacidad</a>.</span></label>
+        <button class="lnk btn pill lg full send" type="submit">
+          <span class="idle">Agenda un diagnóstico preventivo<Icono name="arrow" size={18} stroke={2} class="arr" /></span>
+          <span class="busy"><span class="spinner" aria-hidden="true"></span>Enviando…</span>
+        </button>
+        <p role="alert" class="full err">No pudimos enviar tu solicitud. Inténtalo de nuevo o escríbenos por WhatsApp al {SITIO.telefono}.</p>
+      </form>
+      <div role="status" class="ok">
+        <span class="chip okchk chk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="draw" pathLength="1" d="m5 12 4 4 10-10"></path></svg></span>
+        <p class="serif in">Recibimos tu solicitud.</p>
+        <p class="muted in d1">Te contactaremos para agendar tu diagnóstico. Si es urgente, escríbenos por WhatsApp.</p>
+        <button type="button" class="lnk ul in d2 again" data-reset>Enviar otra solicitud</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { enviarFormularios } from '../scripts/formularios';
+  enviarFormularios();
+</script>
+
+<style>
+  .diag { position: relative; overflow: hidden; }
+  .cols { position: relative; padding-top: clamp(56px, 8vw, 112px); padding-bottom: clamp(56px, 8vw, 112px); display: flex; flex-wrap: wrap; gap: 40px 72px; }
+  .side { flex: 1 1 320px; min-width: 0; }
+  .how { margin: 32px 0 14px; }
+  .steps { margin: 0; padding: 0; list-style: none; }
+  .steps li { display: flex; gap: 16px; align-items: center; padding: 14px 0; border-top: 1px solid var(--dark-line); }
+  .n { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--dark-accent); color: var(--dark-accent); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; letter-spacing: normal; }
+  .alt { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; font-size: 16px; }
+
+  .card-form { flex: 1.3 1 440px; min-width: 0; background: var(--bg); color: var(--ink); border-radius: 28px; padding: clamp(22px, 3vw, 42px); box-shadow: 0 40px 80px -50px rgba(0, 0, 0, .7); }
+  .card-form .muted { color: var(--muted); }
+  form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px 16px; }
+  form > label { display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 600; }
+  .opt { font-weight: 400; }
+  .full { grid-column: 1 / -1; }
+  textarea { resize: vertical; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  legend { font-size: 15px; font-weight: 600; padding: 0; margin-bottom: 6px; }
+  .seg { display: flex; gap: 6px; padding: 4px; border-radius: 16px; border: 1px solid var(--line-strong); background: var(--surface); }
+  .seg label { position: relative; flex: 1; min-height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; padding: 0 10px; transition: background-color .2s ease, color .2s ease; }
+  .seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .seg label:has(:checked) { background: var(--ink); color: var(--bg); }
+  .seg label:has(:focus-visible) { outline: 2px solid var(--ink); outline-offset: 2px; }
+  /* El tamaño solo aplica a empresas */
+  form:has([value="persona"]:checked) .tamano { display: none; }
+
+  .check { flex-direction: row !important; gap: 12px !important; align-items: flex-start; font-weight: 400 !important; cursor: pointer; }
+  .check input { width: 20px; height: 20px; margin: 1px 0 0; flex: none; accent-color: var(--ink); }
+  .check a { font-weight: 600; }
+  .send { min-height: 58px; gap: 12px; }
+  .idle, .busy { display: inline-flex; align-items: center; gap: 12px; }
+  .busy, .err, .ok { display: none; }
+  .err { margin: 0; color: var(--error); font-size: 15px; }
+
+  [data-estado="sending"] .idle { display: none; }
+  [data-estado="sending"] .busy { display: inline-flex; }
+  [data-estado="error"] .err { display: block; }
+  [data-estado="sent"] form { display: none; }
+  [data-estado="sent"] .ok { display: flex; }
+
+  .ok { min-height: 420px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 16px; }
+  .ok p { margin: 0; }
+  .ok .serif { font-size: 46px; line-height: 1; }
+  .ok .muted { max-width: 420px; }
+  .okchk { width: 64px; height: 64px; border-radius: 50%; }
+  .okchk path { animation-delay: .25s; }
+  .again { min-height: 44px; font-size: 16px; font-weight: 600; }
+</style>

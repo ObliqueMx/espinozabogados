@@ -1,0 +1,13 @@
+---
+// Encabezado de sección: "§ 01   TÍTULO  ———". `animar` hace crecer la línea al cargar.
+interface Props {
+  num?: string;
+  label: string;
+  animar?: boolean;
+  class?: string;
+}
+const { num, label, animar = false, class: cls } = Astro.props;
+---
+<p class:list={['eyebrow mono', cls]}>
+  {num && <span class="num">§ {num}</span>}<span>{label}</span><span class:list={['line', { rule: animar }]}></span><slot />
+</p>

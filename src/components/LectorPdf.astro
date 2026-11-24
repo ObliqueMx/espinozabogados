@@ -1,0 +1,69 @@
+---
+// Lector de una publicación: sus páginas como imágenes, con indicador de página, zoom y descarga.
+import { Image } from 'astro:assets';
+import Icono from './Icono.astro';
+import type { Publicacion } from '../data/publicaciones';
+
+interface Props { p: Publicacion }
+const { p } = Astro.props;
+const n = p.doc.pages.length;
+---
+<article class="lector" data-lector>
+  <div class="bar">
+    <span aria-live="polite" class="mono pg">PÁGINA <span data-cur>1</span> DE {n}</span>
+    <span class="hide-sm zoom" role="group" aria-label="Tamaño de las páginas">
+      <button type="button" class="lnk zb" aria-label="Alejar" data-zoom="-0.25">−</button>
+      <span class="mono muted zl" data-zl>100%</span>
+      <button type="button" class="lnk zb" aria-label="Acercar" data-zoom="0.25">+</button>
+    </span>
+    <a class="btn pill dl" href={p.doc.pdf} download={p.doc.file}><Icono name="download" size={16} stroke={2} /><span>Descargar <span class="hide-sm">PDF</span></span></a>
+  </div>
+  <div class="scroll">
+    <div class="pages" data-pages>
+      {p.doc.pages.map((src, i) => <Image class="pdfp" src={src} alt={`Página ${i + 1} de ${n}`} widths={[480, src.width]} sizes="(max-width: 860px) 100vw, 820px" loading={i ? 'lazy' : 'eager'} fetchpriority={i ? undefined : 'high'} />)}
+    </div>
+  </div>
+  <p class="end">Fin de la publicación · <a class="ul" href={p.doc.pdf} download={p.doc.file}>Descargar PDF ({p.doc.size})</a></p>
+</article>
+
+<script>
+  const lector = document.querySelector<HTMLElement>('[data-lector]');
+  if (lector) {
+    const imgs = [...lector.querySelectorAll<HTMLElement>('.pdfp')];
+    const cur = lector.querySelector('[data-cur]')!;
+    const pages = lector.querySelector<HTMLElement>('[data-pages]')!;
+    const zl = lector.querySelector('[data-zl]')!;
+
+    // Página a la vista: la última cuya parte superior pasó el 45% de la pantalla.
+    const onScroll = () => {
+      const mid = innerHeight * 0.45;
+      let c = 1;
+      imgs.forEach((im, i) => { if (im.getBoundingClientRect().top < mid) c = i + 1; });
+      if (cur.textContent !== String(c)) cur.textContent = String(c);
+    };
+    addEventListener('scroll', onScroll, { passive: true });
+
+    let zoom = 1;
+    lector.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((b) => b.addEventListener('click', () => {
+      zoom = Math.min(2, Math.max(1, zoom + Number(b.dataset.zoom)));
+      pages.style.width = `${zoom * 100}%`;
+      zl.textContent = `${Math.round(zoom * 100)}%`;
+    }));
+  }
+</script>
+
+<style>
+  .lector { flex: 2 1 560px; min-width: 0; max-width: 820px; }
+  .bar { position: sticky; top: 84px; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 8px 8px 20px; margin-bottom: 18px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 14px 30px -24px rgba(0, 0, 0, .55); }
+  .pg { letter-spacing: .1em; white-space: nowrap; }
+  .zoom { display: inline-flex; align-items: center; gap: 2px; }
+  .zb { width: 44px; height: 44px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; }
+  .zb:hover, .zb:focus-visible { background: rgba(0, 0, 0, .06); }
+  .zl { min-width: 48px; text-align: center; letter-spacing: normal; }
+  .dl { min-height: 44px; padding: 0 18px; font-size: 15px; }
+  .scroll { overflow-x: auto; overscroll-behavior-x: contain; }
+  .pages { width: 100%; display: flex; flex-direction: column; gap: 18px; }
+  .pdfp { width: 100%; height: auto; background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 30px 50px -40px rgba(0, 0, 0, .5); }
+  .end { margin: 22px 0 0; font-size: 16px; color: var(--muted); }
+  .end a { color: var(--ink); font-weight: 600; }
+</style>

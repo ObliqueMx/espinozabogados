@@ -1,0 +1,13 @@
+---
+// Ícono de trazo (24×24). Decorativo: siempre aria-hidden.
+import { ICONOS, type Icono } from '../data/iconos';
+
+interface Props {
+  name: Icono;
+  size?: number;
+  stroke?: number;
+  class?: string;
+}
+const { name, size = 24, stroke = 1.7, class: cls } = Astro.props;
+---
+<svg class={cls} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width={stroke} stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d={ICONOS[name]}></path></svg>

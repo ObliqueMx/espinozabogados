@@ -1,0 +1,54 @@
+---
+// Suscripción al boletín. Mismo mecanismo que el diagnóstico (scripts/formularios.ts).
+import Icono from './Icono.astro';
+import { ruta } from '../data/sitio';
+---
+<section class="news" aria-label="Boletín">
+  <div class="wrap row" data-form-box data-estado="form">
+    <div class="intro">
+      <span class="ico" aria-hidden="true"><Icono name="mail" size={24} stroke={1.6} /></span>
+      <div>
+        <p class="serif t">Recibe nuestras publicaciones.</p>
+        <p class="s">Cambios fiscales importantes, explicados en simple.</p>
+      </div>
+    </div>
+    <form action={ruta('/enviar.php')} method="post" data-ajax="boletin">
+      <input type="hidden" name="form" value="boletin">
+      <label class="hp" aria-hidden="true">Sitio web<input name="sitio_web" tabindex="-1" autocomplete="off"></label>
+      <label class="mono f1">NOMBRE<input class="fi" required name="b-nombre" autocomplete="name" maxlength="200"></label>
+      <label class="mono f2">CORREO<input class="fi" required type="email" name="b-correo" autocomplete="email" maxlength="200"></label>
+      <button class="lnk btn pill light" type="submit">Suscribirme</button>
+      <p role="alert" class="err">No pudimos registrarte. Inténtalo de nuevo.</p>
+    </form>
+    <p role="status" class="serif ok in">Listo. Te enviaremos nuestras próximas publicaciones.</p>
+  </div>
+</section>
+
+<script>
+  import { enviarFormularios } from '../scripts/formularios';
+  enviarFormularios();
+</script>
+
+<style>
+  .news { background: var(--dark-deep); color: var(--dark-ink); }
+  .row { padding-top: 44px; padding-bottom: 44px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; }
+  .intro { flex: 1 1 300px; display: flex; gap: 18px; align-items: center; }
+  .ico { flex: none; width: 54px; height: 54px; border-radius: 50%; border: 1px solid var(--dark-accent); color: var(--dark-accent); display: inline-flex; align-items: center; justify-content: center; }
+  .t { margin: 0; font-size: 32px; line-height: 1.05; }
+  .s { margin: 4px 0 0; color: var(--dark-muted); font-size: 16px; }
+  form { flex: 2 1 440px; display: flex; flex-wrap: wrap; gap: 10px; }
+  form > label { display: flex; flex-direction: column; gap: 4px; letter-spacing: .12em; color: var(--dark-muted); }
+  .f1 { flex: 1 1 160px; }
+  .f2 { flex: 1.4 1 200px; }
+  .fi { border-color: var(--dark-line); background: transparent; color: var(--dark-ink); font-family: var(--sans); font-size: 17px; letter-spacing: 0; }
+  .fi:focus { border-color: var(--dark-ink); }
+  button { align-self: flex-end; min-height: 50px; padding: 0 24px; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .err, .ok { display: none; margin: 0; }
+  .err { flex: 1 1 100%; font-size: 15px; }
+  .ok { flex: 2 1 440px; font-size: 30px; }
+  [data-estado="sending"] button { opacity: .6; pointer-events: none; }
+  [data-estado="error"] .err { display: block; }
+  [data-estado="sent"] form { display: none; }
+  [data-estado="sent"] .ok { display: block; }
+</style>

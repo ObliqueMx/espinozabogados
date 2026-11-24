@@ -1,0 +1,28 @@
+---
+import { RUTAS, SITIO } from '../data/sitio';
+---
+<footer class="dark">
+  <div class="wrap mono">
+    <span>© 2026 PEYA, S.C. TODOS LOS DERECHOS RESERVADOS</span>
+    <a class="lnk ul" href={RUTAS.aviso}>AVISO DE PRIVACIDAD</a>
+  </div>
+</footer>
+
+<!-- WhatsApp flotante -->
+<a class="lnk btn wa" href={SITIO.whatsapp} target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp (abre en otra pestaña)">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 0 0-7.4 12.7L3.5 20.5l4.4-1.1A8.5 8.5 0 1 0 12 3.5z"></path><path d="M8.6 12h.01M12 12h.01M15.4 12h.01" stroke-width="2.6"></path></svg>
+  <span class="wa-label">WhatsApp</span>
+</a>
+
+<style>
+  footer { color: var(--dark-muted); }
+  .wrap { padding-top: 26px; padding-bottom: 100px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; letter-spacing: .12em; }
+  .wa { position: fixed; right: 18px; bottom: 18px; z-index: 40; display: inline-flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 22px 0 18px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 16px; font-weight: 600; box-shadow: 0 14px 34px -14px rgba(0, 0, 0, .5); }
+  @media (max-width: 640px) {
+    .wa { padding: 0 16px; }
+    .wa-label { display: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .wa { animation: pulse 3s 2.5s 2; }
+  }
+</style>

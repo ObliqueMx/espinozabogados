@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Diagnostico from '../components/Diagnostico.astro';
+import Boletin from '../components/Boletin.astro';
+import Oficinas from '../components/Oficinas.astro';
+---
+<Base title="Agenda un diagnóstico preventivo" description="Cuéntanos qué te preocupa. Revisamos tu caso y te decimos qué riesgos vemos y qué hacer.">
+  <PageHead num="06" eyebrow="DIAGNÓSTICO" a="Agenda un " em="diagnóstico preventivo." actual="Diagnóstico"
+    intro="Cuéntanos qué te preocupa. Revisamos tu caso y te decimos qué riesgos vemos y qué hacer." />
+  <Diagnostico />
+  <Boletin />
+  <Oficinas num="07" />
+</Base>

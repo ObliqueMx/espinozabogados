@@ -1,0 +1,60 @@
+---
+import LinkedIn from '../components/LinkedIn.astro';
+import Base from '../layouts/Base.astro';
+import { Picture } from 'astro:assets';
+import retrato from '../assets/paolo-espinoza.jpg';
+import PageHead from '../components/PageHead.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import { RUTAS } from '../data/sitio';
+import { TIPOS } from '../data/publicaciones';
+import { PILARES } from '../data/firma';
+
+const forum = `${RUTAS.publicaciones}${TIPOS.art.slug}/`;
+---
+<Base title="La Firma" description="Más de 20 años de trayectoria en derecho fiscal. Conoce a Paolo Espinoza y cómo trabajamos." activo="firma">
+  <PageHead num="01" eyebrow="LA FIRMA" a="Más de 20 años de trayectoria. " em="Firma fundada en 2026." actual="La Firma"
+    intro="Somos una firma boutique. Prevenimos problemas fiscales y administrativos, y cuando ya existen, los resolvemos ante autoridades federales, estatales y municipales." />
+
+  <section class="wrap pg">
+    <div class="row">
+      <div class="rv frame foto"><Picture class="retrato" src={retrato} formats={['avif', 'webp']} alt="Paolo Espinoza, socio director de Espinoza Abogados" widths={[400, 800]} sizes="(max-width: 860px) 100vw, 400px" loading="eager" draggable="false" /></div>
+      <div class="txt">
+        <p class="rv mono gold">EL SOCIO</p>
+        <p class="rv serif name">Paolo Espinoza</p>
+        <p class="muted bio">Socio director. Abogado especialista en derecho fiscal por la Universidad Panamericana. Más de 20 años de experiencia profesional.</p>
+        <div class="btns">
+          <a class="lnk btn pill outline" href={forum}>Publicado en FORUM</a>
+          <LinkedIn />
+        </div>
+      </div>
+    </div>
+
+    <p class="rv mono how">CÓMO TRABAJAMOS</p>
+    <div class="grid">
+      {PILARES.map((x) => (
+        <div class="card inv corner rv pilar">
+          <span aria-hidden="true" class="mono gold n">{x.n}</span>
+          <span class="serif t">{x.t}</span>
+          <span class="muted">{x.d}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+  <CtaFinal />
+</Base>
+
+<style>
+  .pg { padding-top: clamp(48px, 7vw, 96px); padding-bottom: clamp(48px, 7vw, 96px); }
+  .row { display: flex; flex-wrap: wrap; gap: 48px; align-items: center; }
+  .foto { flex: 1 1 340px; min-width: 0; }
+  .txt { flex: 1.2 1 440px; min-width: 0; }
+  .txt > p { margin: 0; }
+  .name { margin-top: 10px !important; font-size: clamp(44px, 5vw, 72px); line-height: 1; }
+  .bio { margin-top: 14px !important; max-width: 520px; }
+  .btns { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .how { margin: clamp(64px, 9vw, 120px) 0 22px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .pilar { padding: 32px 30px; border-radius: 24px; min-height: 260px; display: flex; flex-direction: column; gap: 14px; }
+  .n { font-size: 13px; letter-spacing: .1em; }
+  .t { font-size: 40px; line-height: 1; }
+</style>

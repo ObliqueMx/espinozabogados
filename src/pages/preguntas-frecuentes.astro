@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import { PREGUNTAS } from '../data/preguntas';
+---
+<Base title="Preguntas frecuentes" description="Qué es la lista 69-B, el 49 Bis, la materialidad, el PLD y qué hacer si te restringieron el sello digital. Respuestas cortas." activo="preguntas">
+  <PageHead num="05" eyebrow="PREGUNTAS FRECUENTES" a="Preguntas " em="frecuentes." actual="Preguntas frecuentes" intro="Respuestas cortas, sin tecnicismos." />
+  <section class="wrap pg">
+    <div class="faq">
+      {PREGUNTAS.map((f, i) => (
+        <details id={f.id} class="rv" open={i === 0}>
+          <summary>
+            <span class="q"><span class="mono gold n">{f.num}</span><span class="serif">{f.q}</span></span>
+            <span class="plus" aria-hidden="true">+</span>
+          </summary>
+          <div class="a">
+            <p class="muted">{f.a}</p>
+            <a class="lnk ul strong" href={f.relHref}>{f.relLabel} →</a>
+          </div>
+        </details>
+      ))}
+    </div>
+  </section>
+  <CtaFinal />
+</Base>
+
+<script>
+  // Si llegan con #f3, abre esa pregunta.
+  const d = location.hash && document.getElementById(location.hash.slice(1));
+  if (d instanceof HTMLDetailsElement) d.open = true;
+</script>
+
+<style>
+  .pg { padding-top: clamp(40px, 6vw, 72px); padding-bottom: clamp(56px, 8vw, 104px); }
+  .faq { max-width: 900px; border-top: 1px solid var(--line-strong); }
+  details { border-bottom: 1px solid var(--line-strong); }
+  summary { display: flex; justify-content: space-between; gap: 20px; align-items: center; padding: 26px 0; }
+  .q { display: flex; gap: 20px; align-items: baseline; }
+  .n { flex: none; font-size: 13px; letter-spacing: normal; }
+  .q .serif { font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; }
+  .plus { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line-strong); display: inline-flex; align-items: center; justify-content: center; font-size: 22px; line-height: 1; transition: transform .2s var(--ease-out); }
+  details[open] .plus { transform: rotate(45deg); }
+  .a { padding: 0 0 28px 53px; }
+  .a p { margin: 0; max-width: 680px; font-size: 19px; }
+  .a a { display: inline-block; margin-top: 14px; }
+</style>

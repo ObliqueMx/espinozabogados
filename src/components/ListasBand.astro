@@ -1,0 +1,103 @@
+---
+// Banda verde con las cifras de las listas 69-B y 49 Bis (Inicio y Listas del SAT).
+import Icono from './Icono.astro';
+import Eyebrow from './Eyebrow.astro';
+import { LISTAS, RUTAS } from '../data/sitio';
+
+interface Props {
+  num: string;
+  // En Inicio se agrega el enlace a la página de Listas.
+  conEnlace?: boolean;
+}
+const { num, conEnlace = false } = Astro.props;
+const fmt = (n: number) => n.toLocaleString('es-MX');
+// El ticker se repite dos veces para que el desplazamiento sea continuo.
+const ticker = [...LISTAS.ticker, ...LISTAS.ticker];
+---
+<section class="dark band" aria-labelledby="h-listas">
+  <div class="tickwrap" role="marquee" aria-label="Últimas publicaciones en el DOF">
+    <div class="tick mono">
+      {ticker.map((t) => <span><span aria-hidden="true" class="sec">§</span>{t}</span>)}
+    </div>
+  </div>
+  <div class="wrap body" data-contador>
+    <Eyebrow num={num} label="LISTAS DEL SAT" class="rv">
+      <span class="upd"><span class="live pt"></span>{LISTAS.actualizado}</span>
+    </Eyebrow>
+    <h2 id="h-listas" class="h2 rv">¿Tu proveedor está en <em>la lista</em>?</h2>
+    <div class="grid">
+      <div class="box rv">
+        <p class="mono k">LISTA DEFINITIVA 69-B · EFOS</p>
+        <p class="serif big" data-n={LISTAS.definitiva69b}>{fmt(LISTAS.definitiva69b)}</p>
+        <p class="muted s">contribuyentes en la lista definitiva.</p>
+        <p class="foot">De ellos, <strong data-n={LISTAS.nuevos69b}>{LISTAS.nuevos69b}</strong> se agregaron en el DOF del {LISTAS.fechaDof}.</p>
+      </div>
+      <div class="box rv">
+        <p class="mono k">LISTA 49 BIS · FACTURAS FALSAS</p>
+        <p class="serif big" data-n={LISTAS.bis49}>{LISTAS.bis49}</p>
+        <p class="muted s">contribuyentes con facturas declaradas falsas.</p>
+        <p class="foot">De ellos, <strong>{LISTAS.nuevos49}</strong> se agregó en el DOF del {LISTAS.fechaDof}.</p>
+      </div>
+      <div class="box panel rv">
+        <p class="serif q">¿Qué significa estar en estas listas?</p>
+        <p class="muted s"><strong>69-B:</strong> el SAT considera que esa empresa facturó operaciones que no existieron.</p>
+        <p class="muted s"><strong>49 Bis:</strong> el SAT revisó sus facturas y concluyó que son falsas.</p>
+        <p class="muted s">Si le compraste a alguien de la lista, sus facturas pueden dejar de servirte para deducir.</p>
+        <a class="lnk btn pill light go" href={RUTAS.diagnostico}>Revisa a tus proveedores<Icono name="arrow" size={16} stroke={2} class="arr" /></a>
+      </div>
+    </div>
+    {conEnlace && <a class="lnk ul strong more" href={RUTAS.listas}>Cómo leer las listas y qué hacer →</a>}
+  </div>
+</section>
+
+<script>
+  // Cuenta de 0 a la cifra real cuando la banda entra en pantalla. Sin JS se ve la cifra final.
+  const box = document.querySelector<HTMLElement>('[data-contador]');
+  if (box && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const els = [...box.querySelectorAll<HTMLElement>('[data-n]')];
+    const targets = els.map((el) => Number(el.dataset.n));
+    const obs = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      obs.disconnect();
+      const start = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - start) / 1200);
+        const e = 1 - Math.pow(1 - p, 3);
+        els.forEach((el, i) => { el.textContent = Math.round(targets[i] * e).toLocaleString('es-MX'); });
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    obs.observe(box);
+  }
+</script>
+
+<style>
+  .band { position: relative; overflow: hidden; }
+  .tickwrap { border-bottom: 1px solid var(--dark-line); overflow: hidden; white-space: nowrap; padding: 14px 0; }
+  .tick { display: inline-flex; gap: 56px; padding-left: 24px; letter-spacing: .12em; color: var(--dark-muted); }
+  .tick > span { display: inline-flex; align-items: center; gap: 12px; }
+  .sec { color: var(--dark-accent); }
+  .body { position: relative; padding-top: clamp(48px, 7vw, 104px); padding-bottom: clamp(48px, 7vw, 104px); }
+  .upd { color: var(--dark-muted); display: inline-flex; align-items: center; gap: 8px; }
+  .pt { width: 7px; height: 7px; border-radius: 50%; background: var(--dark-accent); }
+  h2 { margin-bottom: 40px; max-width: 760px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; }
+  .box { border: 1px solid var(--dark-line); border-radius: 24px; padding: 30px; display: flex; flex-direction: column; }
+  .box p { margin: 0; }
+  .k { letter-spacing: .12em; color: var(--dark-muted); }
+  .big { margin: 14px 0 6px !important; font-size: clamp(64px, 7.5vw, 112px); line-height: .95; color: var(--dark-accent); font-variant-numeric: tabular-nums; }
+  .s { font-size: 16px; }
+  .box > .s { margin-bottom: 20px; }
+  .foot { margin-top: auto !important; padding-top: 16px; border-top: 1px solid var(--dark-line); font-size: 16px; }
+  strong { font-weight: 600; color: var(--dark-ink); }
+  .panel { border: 0; background: var(--dark-panel); gap: 12px; }
+  .panel > .s { margin-bottom: 0; }
+  .q { font-size: 30px; line-height: 1.05; }
+  .go { margin-top: auto; align-self: flex-start; }
+  .more { display: inline-block; margin-top: 30px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .tick { animation: marq 42s linear infinite; }
+    .tickwrap:hover .tick { animation-play-state: paused; }
+  }
+</style>

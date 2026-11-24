@@ -1,0 +1,23 @@
+---
+// Llamado final en páginas sin formulario.
+import Icono from './Icono.astro';
+import { RUTAS, SITIO } from '../data/sitio';
+---
+<section class="wrap end">
+  <div class="dark rv box">
+    <p class="serif t">¿Tienes una urgencia fiscal? <em>Hablemos.</em></p>
+    <div class="acts">
+      <a class="lnk btn pill light lg" href={RUTAS.diagnostico}><span>Agenda un diagnóstico<span class="hide-sm"> preventivo</span></span><Icono name="arrow" size={18} stroke={2} class="arr" /></a>
+      <a class="lnk ul" href={SITIO.whatsapp} target="_blank" rel="noopener">o escríbenos por WhatsApp <span class="sr-only">(abre en otra pestaña)</span></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .end { padding-bottom: clamp(56px, 8vw, 104px); }
+  .box { position: relative; overflow: hidden; border-radius: 32px; padding: clamp(28px, 6vw, 80px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; }
+  .t { position: relative; flex: 1 1 360px; margin: 0; font-size: clamp(36px, 4.6vw, 64px); line-height: 1; }
+  .acts { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+  .acts .pill { padding: 19px 28px; }
+  .acts .ul { font-size: 16px; font-weight: 500; }
+</style>

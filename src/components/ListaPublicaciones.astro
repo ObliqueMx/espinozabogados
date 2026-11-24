@@ -1,0 +1,87 @@
+---
+// Listado de publicaciones con filtros. Filtran en la misma página (sin recargar) y cambian la URL a
+// /publicaciones/forum/, etc., para que se pueda compartir. Sin JS, los filtros siguen siendo enlaces a esas páginas.
+import { Image } from 'astro:assets';
+import Icono from './Icono.astro';
+import { RUTAS, SITIO } from '../data/sitio';
+import { FILTROS, PUBLICACIONES, TIPOS, metaPdf, type TipoPub } from '../data/publicaciones';
+
+interface Props { filtro?: TipoPub }
+const { filtro } = Astro.props;
+const chips = [
+  { label: 'Todas', href: RUTAS.publicaciones, tipo: '', title: 'Publicaciones' },
+  ...FILTROS.map((f) => ({ label: TIPOS[f.tipo].chip, href: `${RUTAS.publicaciones}${TIPOS[f.tipo].slug}/`, tipo: f.tipo, title: f.title }))
+];
+let visibles = 0;
+---
+<section class="wrap pg" data-filtros>
+  <nav class="chips" aria-label="Filtrar publicaciones">
+    {chips.map((c) => (
+      <a class="lnk" href={c.href} data-tipo={c.tipo} data-title={`${c.title} · ${SITIO.nombre}`} aria-current={c.tipo === (filtro ?? '') ? 'page' : undefined}>{c.label}</a>
+    ))}
+  </nav>
+  <div class="list-rows">
+    {PUBLICACIONES.map((p) => {
+      const ver = !filtro || p.tipo === filtro;
+      const eager = ver && visibles++ < 1; // ponytail: solo la primera; las demás suelen quedar bajo el pliegue
+      return (
+        <a class="lnk srow row" href={RUTAS.publicacion(p.id)} data-tipo={p.tipo} hidden={!ver}>
+          <span class="pcov" aria-hidden="true"><Image src={p.doc.pages[0]} alt="" widths={[62, 124]} sizes="62px" loading={eager ? 'eager' : 'lazy'} /></span>
+          <span class="mono meta">
+            <span class="tag"><span class:list={['dot', p.tipo]}></span>{TIPOS[p.tipo].tagUp}</span>
+            <span class="muted">{p.date}</span>
+            <span class="muted">{metaPdf(p)}</span>
+          </span>
+          <span class="serif t">{p.title}</span>
+          <span class="ring"><Icono name="arrow" size={18} stroke={2} /></span>
+        </a>
+      );
+    })}
+  </div>
+  <p class="sr-only" aria-live="polite" data-total></p>
+</section>
+
+<script>
+  const raiz = document.querySelector<HTMLElement>('[data-filtros]');
+  if (raiz) {
+    const chips = [...raiz.querySelectorAll<HTMLAnchorElement>('.chips a')];
+    const filas = [...raiz.querySelectorAll<HTMLElement>('.row')];
+    const total = raiz.querySelector('[data-total]')!;
+
+    const aplicar = (chip: HTMLAnchorElement, anunciar: boolean) => {
+      const tipo = chip.dataset.tipo;
+      let n = 0;
+      filas.forEach((f) => { f.hidden = !!tipo && f.dataset.tipo !== tipo; if (!f.hidden) n++; });
+      chips.forEach((c) => c === chip ? c.setAttribute('aria-current', 'page') : c.removeAttribute('aria-current'));
+      document.title = chip.dataset.title!;
+      if (anunciar) total.textContent = `${n} ${n === 1 ? 'publicación' : 'publicaciones'}`;
+    };
+
+    chips.forEach((chip) => chip.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return; // abrir en otra pestaña sigue funcionando
+      e.preventDefault();
+      if (chip.getAttribute('aria-current') === 'page') return;
+      aplicar(chip, true);
+      history.pushState(null, '', chip.href);
+    }));
+
+    // Atrás / adelante del navegador.
+    addEventListener('popstate', () => {
+      const chip = chips.find((c) => c.pathname === location.pathname);
+      if (chip) aplicar(chip, false);
+    });
+  }
+</script>
+
+<style>
+  .pg { padding-top: clamp(40px, 6vw, 72px); padding-bottom: clamp(56px, 8vw, 104px); }
+  .chips { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 5px; border-radius: 999px; border: 1px solid var(--line-strong); margin-bottom: 30px; }
+  .chips a { min-height: 44px; display: inline-flex; align-items: center; padding: 0 18px; border-radius: 999px; font-size: 15px; font-weight: 500; transition: background-color .2s ease, color .2s ease; }
+  .chips a[aria-current="page"] { background: var(--ink); color: var(--bg); }
+  .row[hidden] { display: none; }
+  .row { flex-wrap: wrap; gap: 8px 28px; padding: 26px 0; }
+  .pcov { flex: none; width: 62px; height: 80px; border-radius: 4px; box-shadow: 0 10px 18px -14px rgba(0, 0, 0, .5); }
+  .meta { flex: 0 0 190px; display: flex; flex-direction: column; gap: 4px; letter-spacing: .12em; }
+  .tag { display: inline-flex; align-items: center; gap: 8px; }
+  .t { flex: 1 1 320px; font-size: clamp(24px, 2.6vw, 34px); line-height: 1.1; }
+</style>
